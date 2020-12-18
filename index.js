@@ -109,7 +109,8 @@ Toolkit.run(async tools => {
     // do it in the current checked out github branch (DETACHED HEAD)
     // important for further usage of the package.json version
     console.log('current:', currentVersion, '/', 'version:', version)
-    let newVersion = changePackageVersion(getNewVersion(currentVersion, version))
+    let newVersion = getNewVersion(currentVersion, version)
+    changePackageVersion(newVersion)
     //let newVersion = execSync(`npm version --git-tag-version=false ${version}`).toString().trim()
     await tools.runInWorkspace('git', ['commit', '-a', '-m', `ci: ${commitMessage} ${newVersion}`])
 
