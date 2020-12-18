@@ -14,8 +14,11 @@ const getPackageVersion = () => {
 }
 
 const getNewVersion = (current, version) => {
+  console.log("current:", current)
+  console.log("version:", version)
   const split = current.split(".")
-  if (version == "major") {
+  console.log("split:", split)
+  if (version === "major") {
     split[0] = Number(split[0]) + 1
   }
   else if (version === "minor") {
