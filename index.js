@@ -3,14 +3,8 @@ const { execSync } = require('child_process')
 fs = require('fs')
 
 const getPackageVersion = () => {
-  fs.readFile('_version.py', 'utf8', function (err,data) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log(typeof(data))
-    console.log(data.split("\"")[1]);
-    return data.split("\"")[1];
-  });
+  const versionString = fs.readFileSync('_version.py', 'utf8');
+  return versionString.split("\"")[1]
 }
 
 const getNewVersion = (current, version) => {
