@@ -7,7 +7,7 @@ const getPackageVersion = () => {
     if (err) {
       return console.log(err);
     }
-    console.log(data);
+    console.log(data.split("\"")[1]);
     return data.split("\"")[1];
   });
 }
