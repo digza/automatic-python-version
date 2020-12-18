@@ -1,5 +1,5 @@
-name: Automated Version Bump
-description: Automated version bump for npm packages.
+name: Automated Version Bump - Python
+description: Automated version bump for python packages.
 runs:
   using: docker
   image: Dockerfile
