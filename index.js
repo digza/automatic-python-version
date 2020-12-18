@@ -126,6 +126,7 @@ Toolkit.run(async tools => {
     console.log('current:', current, '/', 'version:', version)
     newVersion = execSync(`npm version --git-tag-version=false ${version}`).toString().trim() */
     changePackageVersion(getNewVersion(currentVersion, version))
+    console.log("ok so far")
     newVersion = `${process.env['INPUT_TAG-PREFIX']}${newVersion}`
     console.log('new version:', newVersion)
     console.log(`::set-output name=newTag::${newVersion}`)
