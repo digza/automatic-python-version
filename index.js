@@ -11,6 +11,23 @@ const getPackageVersion = () => {
   });
 }
 
+const getNewVersion = (current, version) => {
+  const split = current.split(".")
+  if (version == "major") {
+    split[0] = Number(split[0]) + 1
+  }
+  else if (version === "minor") {
+    split[1] = Number(split[1]) + 1
+  }
+  else
+  split[2] = Number(split[2]) + 1
+  return split.join(".")
+}
+
+const changePackageVersion = (newVersion) => {
+  fs.writeFileSync('_version.py', '__version__ = ' + '\"' + newVersion + "\"")
+}
+
 // Change working directory if user defined PACKAGEJSON_DIR
 if (process.env.PACKAGEJSON_DIR) {
   process.env.GITHUB_WORKSPACE = `${process.env.GITHUB_WORKSPACE}/${process.env.PACKAGEJSON_DIR}`
@@ -19,8 +36,7 @@ if (process.env.PACKAGEJSON_DIR) {
 
 // Run your GitHub Action!
 Toolkit.run(async tools => {
-  //const pkg = tools.getPackageJSON()
-  const current = getPackageVersion();
+  const currentVersion = getPackageVersion();
   const event = tools.context.payload
 
   if (!event.commits) {
@@ -75,7 +91,6 @@ Toolkit.run(async tools => {
   }
 
   try {
-    //const current = pkg.version.toString()
     // set git user
     await tools.runInWorkspace('git',
       ['config', 'user.name', `"${process.env.GITHUB_USER || 'Automated Version Bump'}"`])
@@ -96,10 +111,9 @@ Toolkit.run(async tools => {
     console.log('currentBranch:', currentBranch)
     // do it in the current checked out github branch (DETACHED HEAD)
     // important for further usage of the package.json version
-    await tools.runInWorkspace('npm',
-      ['version', '--allow-same-version=true', '--git-tag-version=false', current])
-    console.log('current:', current, '/', 'version:', version)
-    let newVersion = execSync(`npm version --git-tag-version=false ${version}`).toString().trim()
+    console.log('current:', currentVersion, '/', 'version:', version)
+    changePackageVersion(getNewVersion(currentVersion, version))
+    //let newVersion = execSync(`npm version --git-tag-version=false ${version}`).toString().trim()
     await tools.runInWorkspace('git', ['commit', '-a', '-m', `ci: ${commitMessage} ${newVersion}`])
 
     // now go to the actual branch to perform the same versioning
@@ -108,10 +122,11 @@ Toolkit.run(async tools => {
       await tools.runInWorkspace('git', ['fetch'])
     }
     await tools.runInWorkspace('git', ['checkout', currentBranch])
-    await tools.runInWorkspace('npm',
+   /*  await tools.runInWorkspace('npm',
       ['version', '--allow-same-version=true', '--git-tag-version=false', current])
     console.log('current:', current, '/', 'version:', version)
-    newVersion = execSync(`npm version --git-tag-version=false ${version}`).toString().trim()
+    newVersion = execSync(`npm version --git-tag-version=false ${version}`).toString().trim() */
+    changePackageVersion(getNewVersion(currentVersion, version))
     newVersion = `${process.env['INPUT_TAG-PREFIX']}${newVersion}`
     console.log('new version:', newVersion)
     console.log(`::set-output name=newTag::${newVersion}`)
