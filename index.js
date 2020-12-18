@@ -8,18 +8,16 @@ const getPackageVersion = () => {
 }
 
 const getNewVersion = (current, version) => {
-  console.log("current:", current)
-  console.log("version:", version)
   const split = current.split(".")
-  console.log("split:", split)
   if (version === "major") {
     split[0] = Number(split[0]) + 1
   }
   else if (version === "minor") {
     split[1] = Number(split[1]) + 1
   }
-  else
-  split[2] = Number(split[2]) + 1
+  else {
+    split[2] = Number(split[2]) + 1
+  }
   return split.join(".")
 }
 
@@ -111,7 +109,7 @@ Toolkit.run(async tools => {
     // do it in the current checked out github branch (DETACHED HEAD)
     // important for further usage of the package.json version
     console.log('current:', currentVersion, '/', 'version:', version)
-    changePackageVersion(getNewVersion(currentVersion, version))
+    let newVersion = changePackageVersion(getNewVersion(currentVersion, version))
     //let newVersion = execSync(`npm version --git-tag-version=false ${version}`).toString().trim()
     await tools.runInWorkspace('git', ['commit', '-a', '-m', `ci: ${commitMessage} ${newVersion}`])
 
@@ -125,7 +123,7 @@ Toolkit.run(async tools => {
       ['version', '--allow-same-version=true', '--git-tag-version=false', current])
     console.log('current:', current, '/', 'version:', version)
     newVersion = execSync(`npm version --git-tag-version=false ${version}`).toString().trim() */
-    changePackageVersion(getNewVersion(currentVersion, version))
+    changePackageVersion(newVersion)
     console.log("ok so far")
     newVersion = `${process.env['INPUT_TAG-PREFIX']}${newVersion}`
     console.log('new version:', newVersion)
